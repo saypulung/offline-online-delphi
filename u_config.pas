@@ -47,9 +47,9 @@ procedure TForm1.checkRegistryKey;
 var openResult:boolean;
 begin
   //check kebutuhan key
-  Registry1:=TRegistry.Create(KEY_READ);
+  Registry1:=TRegistry.Create(KEY_WRITE);
   Registry1.RootKey:=HKEY_LOCAL_MACHINE;
-  if (not Registry1.KeyExists('Software\\Parik\\OfflineApp\\')) then
+  if not Registry1.KeyExists('Software\\Parik\\OfflineApp\\') then
   begin
     Registry1.Access:=KEY_WRITE;
     openResult:= Registry1.OpenKey('Software\\Parik\\OfflineApp\\',True);
@@ -64,7 +64,7 @@ begin
   end else
   begin
       Registry1.Access:=KEY_READ;
-      openResult:=Registry1.OpenKey('Software\\Parik\\OfflineApp\\',False);
+      openResult:=Registry1.OpenKey('Software\\Parik\\OfflineApp\\',true);
       if not openResult=True then
       begin
         showmessage('Unable open registry');

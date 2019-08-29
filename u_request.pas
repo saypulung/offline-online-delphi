@@ -18,10 +18,13 @@ type
     Edit2: TEdit;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormActivate(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
   private
     { Private declarations }
+    procedure checkGuid();
+    procedure createGuidKey();
     procedure simpanRegGuid;
-    procedure postGuid();
+    procedure postGuid(guid:string);
     procedure saveGuidAndSite(); 
   public
     { Public declarations }
@@ -50,9 +53,7 @@ begin
 end;
 
 procedure TFormConfig.FormActivate(Sender: TObject);
-var Guid:TGUID;
-    guid_result,final_guid:string;
-    response_server:TMemoryStream;
+var response_server:TMemoryStream;
     json_data:string;
     response_json,site_attr:TJSONObject;
     data_sites:TJSONArray;
@@ -61,11 +62,7 @@ var Guid:TGUID;
 begin
   DataModule1.initPath;
   state_complete:=false;
-  CreateGUID(guid);
-  guid_result:=GUIDToString(guid);
-  final_guid:=StringReplace(guid_result,'{','',[rfReplaceAll, rfIgnoreCase]);
-  final_guid:=StringReplace(final_guid,'}','',[rfReplaceAll, rfIgnoreCase]);
-  edit1.Text:=final_guid;
+  checkGuid;
   ComboBox1.Items.Clear;
   response_server:=TMemoryStream.Create;
   try
@@ -109,14 +106,80 @@ begin
   end;
 end;
 
-procedure TFormConfig.postGuid;
+procedure TFormConfig.postGuid(site:string);
+var paramsPost:TStringList;
+    response:TMemoryStream;
+    json_data:string;
 begin
   //post data guid
+  txtUrl:=DataModule1.path_client_id;
+  paramsPost:=TStringList.Create;
+  paramsPost.add('guid='+edit1.Text);
+  paramsPost.Add('siteId'+site);
+  urlHttp:=TIdHTTP.Create(nil);
+  urlHttp.HTTPOptions:=[hoForceEncodeParams];
+  urlHttp.Request.ContentType:='application/x-www-form-urlencoded';
+  urlHttp.HandleRedirects:=true;
+  response:=TMemoryStream.Create;
+  urlHttp.Post(txtUrl,paramsPost,response);
+  response.Position:=0;
+  SetString(json_data,pchar(response_server.memory),response_server.size div sizeof(char) );
 end;
 
 procedure TFormConfig.saveGuidAndSite;
 begin
   //post guid n site
+end;
+
+procedure TFormConfig.checkGuid;
+begin
+   Registry1:=TRegistry.Create(KEY_READ);
+   Registry1.RootKey:=HKEY_LOCAL_MACHINE;
+   if Registry1.OpenKey('Software\\Parik\\OfflineApp\\',True)=true then
+   begin
+    if not Registry1.KeyExists('AppGuid') then
+    begin
+      createGuidKey;
+    end else
+    begin
+      edit1.Text:=registry1.ReadString('AppGuid');
+    end;
+
+   end;
+end;
+
+procedure TFormConfig.createGuidKey;
+var guid:TGUID;
+  guid_result,final_guid:string;
+begin
+  CreateGUID(guid);
+  guid_result:=GUIDToString(guid);
+  final_guid:=StringReplace(guid_result,'{','',[rfReplaceAll, rfIgnoreCase]);
+  final_guid:=StringReplace(final_guid,'}','',[rfReplaceAll, rfIgnoreCase]);
+  edit1.Text:=final_guid;
+  simpanRegGuid;
+end;
+
+procedure TFormConfig.Button2Click(Sender: TObject);
+var pecahan:TStringList;
+  siteId:string;
+begin
+  if ComboBox1.Text='' then
+  begin
+    showmessage('Pilih Salah satu Site dulu cok');
+    exit;
+  end;
+  pecahan:=TStringList.Create();
+  try
+    pecahan.Clear;
+    pecahan.Delimiter:='-';
+    pecahan.DelimitedText:=ComboBox1.Text;
+    siteId:=pecahan[0];
+    postGuid(siteId);
+  finally
+    pecahan.Free;
+  end;
+  
 end;
 
 end.

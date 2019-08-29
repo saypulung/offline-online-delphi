@@ -42,6 +42,7 @@ object FormConfig: TFormConfig
       Top = 16
       Width = 313
       Height = 21
+      Enabled = False
       TabOrder = 0
       Text = 'EditGuid'
     end
@@ -68,6 +69,7 @@ object FormConfig: TFormConfig
       Height = 25
       Caption = 'Jalok ID Coookkk'
       TabOrder = 3
+      OnClick = Button2Click
     end
     object Edit2: TEdit
       Left = 408

@@ -2,7 +2,7 @@ program P_Parik_Local;
 
 uses
   Forms,
-  uJSON in 'uJSON.pas',
+  uJSON in 'uJSON.pas'
   u_config in 'u_config.pas' {Form1},
   u_cari_barang in 'u_cari_barang.pas' {FormBarang},
   u_request in 'u_request.pas' {FormConfig},
