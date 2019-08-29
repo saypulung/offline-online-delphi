@@ -1,0 +1,20 @@
+program P_Parik_Local;
+
+uses
+  Forms,
+  u_config in 'u_config.pas' {Form1},
+  u_cari_barang in 'u_cari_barang.pas' {FormBarang},
+  u_request in 'u_request.pas' {FormConfig},
+  dm in 'dm.pas' {DataModule1: TDataModule},
+  uJSON in 'uJSON.pas';
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.CreateForm(TForm1, Form1);
+  Application.CreateForm(TFormBarang, FormBarang);
+  Application.CreateForm(TFormConfig, FormConfig);
+  Application.CreateForm(TDataModule1, DataModule1);
+  Application.Run;
+end.
